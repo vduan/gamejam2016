@@ -10,9 +10,14 @@ state.preload = function () {
   this.addImage( 'grid', './assets/img/background/background_1.png' );
   this.addImage( 'player', './assets/img/logo/rocket.png' );
   this.addImage( 'missile', './assets/img/anime/missile.png');
+  this.addImage( 'poke', './assets/img/pokeb.png' );
 };
 
 state.create = function () {
+
+  this.SHOT_DELAY = 100; // milliseconds (10 bullets/second)
+  this.BULLET_SPEED = 100; // pixels/second
+  this.NUMBER_OF_BULLETS = 20;
 
   this.background = new Kiwi.GameObjects.StaticImage( this, this.textures.grid, 0, 0 );
   this.addChild(this.background);
@@ -23,6 +28,7 @@ state.create = function () {
   this.downKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.DOWN, true );
   this.rightKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.RIGHT, true );
   this.leftKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.LEFT, true );
+  this.spacebar = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.SPACEBAR, true);
 
   this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 350, 540 );
   this.addChild( this.player );
@@ -32,11 +38,89 @@ state.create = function () {
   this.addChild( this.missile );
   this.missilerect = new Kiwi.Geom.Rectangle( this.missile.x, this.missile.y, this.missile.width, this.missile.height );
 
+  // Set the pivot point to the center of the gun
+  this.player.anchorPointX = this.player.width * 0.5;
+  this.player.anchorPointY = this.player.height * 0.5;
+
+  // Create an object pool of bullets
+  this.bulletPool = new Kiwi.Group( this );
+  this.addChild ( this.bulletPool );
+  for( var i = 0; i < this.NUMBER_OF_BULLETS; i++ ) {
+      // Create each bullet and add it to the group.
+      var bullet = new Kiwi.GameObjects.Sprite( this, this.textures.poke, -100, -100 );
+      this.bulletPool.addChild( bullet );
+
+      // Set the pivot point to the center of the bullet
+      bullet.anchorPointX = this.player.width * 0.5;
+      bullet.anchorPointY = this.player.height * 0.5;
+
+      // Enable physics on the bullet
+      bullet.physics = bullet.components.add(new Kiwi.Components.ArcadePhysics(bullet, bullet.box));
+
+      // Set its initial state to "dead".
+      bullet.alive = false;
+  }
 }
 
+state.shootBullet = function() {
+    // Enforce a short delay between shots by recording
+    // the time that each bullet is shot and testing if
+    // the amount of time since the last shot is more than
+    // the required delay.
+    if (this.lastBulletShotAt === undefined) this.lastBulletShotAt = 0;
+    if (this.game.time.now() - this.lastBulletShotAt < this.SHOT_DELAY) return;
+    this.lastBulletShotAt = this.game.time.now();
+
+    // Get a dead bullet from the pool
+    var bullet = this.getFirstDeadBullet();
+
+    // If there aren't any bullets available then don't shoot
+    if (bullet === null || bullet === undefined) return;
+
+    // Revive the bullet
+    // This makes the bullet "alive"
+    this.revive( bullet );
+
+    // Set the bullet position to the gun position.
+    bullet.x = this.player.x + (0.5 * this.player.width);
+    bullet.y = this.player.y + (0.5 * this.player.height);
+
+    // Shoot it
+    bullet.physics.velocity.x = this.BULLET_SPEED;
+    bullet.physics.velocity.y = 0;
+};
+
+state.getFirstDeadBullet = function () {
+    var bullets = this.bulletPool.members;
+
+    for (var i = bullets.length - 1; i >= 0; i--) {
+        if ( !bullets[i].alive ) {
+            return bullets[i];
+        }
+    };
+    return null;
+}
+
+state.revive   = function ( bullet ){
+    bullet.alive = true;
+}
+state.checkBulletPosition = function ( bullet ) {
+
+    if( bullet.x > this.game.stage.width || bullet.x < 0 ||
+        bullet.y > this.game.stage.height || bullet.y < 0 ){
+        bullet.alive = false;
+    }
+}
 
 state.update = function () {
   Kiwi.State.prototype.update.call( this );
+
+  // Shoot bullets
+  if (this.spacebar.isDown) {
+      this.shootBullet();
+  }
+  this.bulletPool.forEach( this, this.checkBulletPosition );
+
   this.missile.x -= 5;
   this.missilerect.x -= 5;
   if(this.missile.x < -this.missile.width ) {
