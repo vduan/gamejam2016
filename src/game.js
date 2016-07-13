@@ -7,7 +7,7 @@ function getRandomInt(min, max) {
 
 state.preload = function () {
 
-  this.addImage( 'grid', './assets/img/grids/large-debug.png' );
+  this.addImage( 'grid', './assets/img/background/background_1.png' );
   this.addImage( 'player', './assets/img/logo/rocket.png' );
   this.addImage( 'missile', './assets/img/anime/missile.png');
 };
@@ -24,7 +24,7 @@ state.create = function () {
   this.rightKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.RIGHT, true );
   this.leftKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.LEFT, true );
 
-  this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 350, 550 );
+  this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 350, 540 );
   this.addChild( this.player );
   this.missile = new Kiwi.GameObjects.Sprite( this, this.textures.missile, 500, 400);
   this.addChild( this.missile );
@@ -37,7 +37,7 @@ state.update = function () {
   this.missile.x -= 5;
   if( this.missile.x < -this.missile.width ) {
 		this.missile.x = 800;
-    this.missile.y = getRandomInt(0, 800);
+    this.missile.y = getRandomInt(0, 500);
 	}
 
 }
