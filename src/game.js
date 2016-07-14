@@ -192,6 +192,11 @@ state.update = function () {
 }
 
 state.checkCollisions = function () {
+  this.playerrect.x = this.player.x;
+  this.playerrect.y = this.player.y;
+  this.playerrect.width = this.player.width;
+  this.playerrect.height = this.player.height;
+
   if (Kiwi.Geom.Intersect.rectangleToRectangle(this.playerrect, this.missilerect).result) {
     console.log('yay');
     FBInstant.game.setScore(5);
