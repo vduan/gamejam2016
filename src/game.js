@@ -32,29 +32,36 @@ state.create = function () {
   this.addChild( this.missile );
   this.missilerect = new Kiwi.Geom.Rectangle( this.missile.x, this.missile.y, this.missile.width, this.missile.height );
 
+  this.running = true;
 }
 
 
 state.update = function () {
-  Kiwi.State.prototype.update.call( this );
-  this.missile.x -= 5;
-  this.missilerect.x -= 5;
-  if(this.missile.x < -this.missile.width ) {
-	 this.missile.x = 800;
-    this.missilerect.x = 800;
-    this.missile.y = getRandomInt(0, 500);
-    this.missilerect.y = this.missile.y;
+  if (this.running) {
+    Kiwi.State.prototype.update.call( this );
+    this.missile.x -= 5;
+    this.missilerect.x -= 5;
+    if(this.missile.x < -this.missile.width ) {
+  	 this.missile.x = 800;
+      this.missilerect.x = 800;
+      this.missile.y = 500;
+      this.missilerect.y = this.missile.y;
+    }
+
+    this.checkCollisions();
   }
-
-  this.checkCollisions();
-
 }
 
 state.checkCollisions = function () {
   if (Kiwi.Geom.Intersect.rectangleToRectangle(this.playerrect, this.missilerect).result) {
     console.log('yay');
+    this.running = false;
+
     FBInstant.game.setScore(5);
-    FBInstant.game.asyncYieldControl();
+    var promise = FBInstant.game.asyncYieldControl();
+    promise.then(function() {
+      this.running = true;
+    });
   }
 }
 
