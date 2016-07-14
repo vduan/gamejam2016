@@ -69,7 +69,7 @@ state.create = function () {
       this.ground.addChild( groundBlock );
   }
 
-  this.missile = new Kiwi.GameObjects.Sprite( this, this.textures.missile, 500, 400);
+  this.missile = new Kiwi.GameObjects.Sprite( this, this.textures.missile, 500, 540);
   this.addChild( this.missile );
   this.missilerect = new Kiwi.Geom.Rectangle( this.missile.x, this.missile.y, this.missile.width, this.missile.height );
 
@@ -125,18 +125,8 @@ state.update = function () {
     if(this.missile.x < -this.missile.width ) {
   	 this.missile.x = 800;
       this.missilerect.x = 800;
-      this.missile.y = 500;
+      this.missile.y = 540;
       this.missilerect.y = this.missile.y;
-    }
-
-    this.missile.x -= 5;
-    this.missilerect.x -= 5;
-    if(this.missile.x < -this.missile.width ) {
-        this.collisionState = false;
-        this.missile.x = 800;
-        this.missilerect.x = 800;
-        this.missile.y = getRandomInt(0, 500);
-        this.missilerect.y = this.missile.y;
     }
 
     // Shoot bullets
