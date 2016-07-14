@@ -38,9 +38,7 @@ state.create = function () {
   this.step = 3;
 
   this.upKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.UP, true );
-  this.downKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.DOWN, true );
-  this.rightKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.RIGHT, true );
-  this.leftKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.LEFT, true );
+  this.spaceKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.SPACEBAR, true );
 
   // Enable physics on the player
   this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 100, 95 );
@@ -105,7 +103,7 @@ state.create = function () {
 
   this.obstaclePool = new Kiwi.Group( this );
   this.addChild( this.obstaclePool );
-  this.obstaclesArray = new Array(); 
+  this.obstaclesArray = new Array();
   for ( var i = 0; i < this.NUMBER_OF_OBSTACLES; i++ ) {
     var obstacle = new Kiwi.GameObjects.Sprite( this, this.textures.obstacle, 500, 400);
     this.obstaclePool.addChild( obstacle);
@@ -114,7 +112,7 @@ state.create = function () {
     var y = getRandomInt(1, 10);
     obstacle.y = obstacle.y - (y * 30);
     this.obstaclesArray.push({obstacle: obstacle, obstacleRect: obstacleRect, speed: speed, y:y});
-  }  
+  }
 
   this.running = true;
 
@@ -140,7 +138,7 @@ state.update = function () {
 
     var onTheGround = this.player.physics.isTouching( Kiwi.Components.ArcadePhysics.DOWN );
     if (!onTheGround) {
-	this.player.animation.switchTo(2);
+	     this.player.animation.switchTo(2);
     }
 
     this.sloth.x -= 3;
@@ -163,11 +161,15 @@ state.update = function () {
         obstacle.y = getRandomInt(0, 500);
         obstacleRect.y = obstacle.y;
       }
-    }    
+    }
 
-    if ( this.upKey.isDown && this.player.y > 50 ) {
+    if (this.spaceKey.isDown) {
+      this.shootBullet();
+    }
+
+    if (this.upKey.isDown && this.player.y > 50 ) {
         this.player.physics.velocity.y = this.JUMP_SPEED;
-	this.player.animation.switchTo(2);
+      this.player.animation.switchTo(2);
     }
 
     this.checkCollisions();
@@ -251,10 +253,3 @@ var gameOptions = {
 };
 
 var game = new Kiwi.Game('game-container', 'Basic Follow', state, gameOptions);
-
-// Shoot bullets on spacebar
-document.body.onkeydown = function(e){
-    if(e.keyCode == 32){
-        state.shootBullet();
-    }
-}
