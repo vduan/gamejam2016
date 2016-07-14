@@ -264,6 +264,8 @@ state.checkBulletCollision = function (bullet) {
 
     this.sloth.x = 800;
     this.sloth.y = getRandomInt(0, 500);
+
+    this.addScore(100);
   }
 };
 
