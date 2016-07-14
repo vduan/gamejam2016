@@ -172,7 +172,7 @@ state.checkCollisions = function () {
     console.log('yay');
     this.running = false;
 
-    FBInstant.game.setScore(5);
+    FBInstant.game.setScore(this.score.counter.current);
     var promise = FBInstant.game.asyncYieldControl();
     promise.then(function() {
       this.running = true;
