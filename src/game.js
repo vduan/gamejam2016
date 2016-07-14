@@ -2,20 +2,18 @@ var state = new Kiwi.State('Play');
 
 state.preload = function () {
 
-  this.addImage( 'grid', './assets/img/background/background_1.png' );
-  this.addSpriteSheet('player', './assets/img/fox/spritesheet_small.png', 100, 95 );
-  this.addImage( 'missile', './assets/img/anime/myspace.jpg');
-  this.addImage( 'sprite', './assets/img/anime/sprite.png');
-  this.addImage( 'obstacle', './assets/img/anime/sprite.png');
+  this.addImage('background', './assets/img/background/background.png');
+  this.addSpriteSheet('player', './assets/img/fox/spritesheet_small.png', 100, 95);
+  this.addImage('myspace', './assets/img/anime/myspace.jpg');
+  this.addImage('obstacle', './assets/img/anime/sprite.png');
+  this.addSpriteSheet('sloth', './assets/img/anime/obstacle_peer_review.png', 100, 100);
 
-  this.addSpriteSheet( 'sloth', './assets/img/anime/obstacle_peer_review.png', 100, 100 );
-
-  this.score = new Kiwi.HUD.Widget.BasicScore( this.game, 50, 50, 0 );
-  this.game.huds.defaultHUD.addWidget( this.score );
+  this.score = new Kiwi.HUD.Widget.BasicScore(this.game, 50, 50, 0);
+  this.game.huds.defaultHUD.addWidget(this.score);
 
   this.score.style.color = 'black';
-  this.addImage( 'poke', './assets/img/pokeb.png' );
-  this.addSpriteSheet('ground', './assets/img/shapes/square.png', 70, 70 );
+  this.addImage('poke', './assets/img/pokeb.png');
+  this.addSpriteSheet('ground', './assets/img/shapes/square.png', 70, 70);
 };
 
 state.create = function () {
@@ -32,51 +30,51 @@ state.create = function () {
   this.NUMBER_OF_BULLETS = 3;
   this.NUMBER_OF_OBSTACLES = 3;
 
-  this.background = new Kiwi.GameObjects.StaticImage( this, this.textures.grid, 0, 0 );
+  this.background = new Kiwi.GameObjects.StaticImage(this, this.textures.background, 0, 0);
   this.addChild(this.background);
 
   this.step = 3;
 
-  this.upKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.UP, true );
-  this.spaceKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.SPACEBAR, true );
-  this.downKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.DOWN, true );
+  this.upKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.UP, true);
+  this.spaceKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.SPACEBAR, true);
+  this.downKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.DOWN, true);
 
   // Enable physics on the player
-  this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 100, 500 );
-  this.player.animation.add( 'run', [ 2, 0, 1 ], 0.07, true, true );
+  this.player = new Kiwi.GameObjects.Sprite(this, this.textures.player, 100, 500);
+  this.player.animation.add('run', [ 2, 0, 1 ], 0.07, true, true);
 
   this.player.physics = this.player.components.add(new Kiwi.Components.ArcadePhysics(this.player, this.player.box));
   this.player.physics.acceleration.y = this.GRAVITY;
   this.player.physics.maxVelocity = this.MAX_SPEED;
   this.player.physics.drag.x = this.DRAG;
-  this.addChild( this.player );
+  this.addChild(this.player);
 
   // Create some ground for the player to walk on
-  this.ground = new Kiwi.Group( this );
-  this.addChild( this.ground );
+  this.ground = new Kiwi.Group(this);
+  this.addChild(this.ground);
   for(var x = 0; x < this.game.stage.width; x += 70) {
       // Add the ground blocks, enable physics on each, make them immovable
-      var groundBlock = new Kiwi.GameObjects.Sprite(this, this.textures.ground, x, 600 );
+      var groundBlock = new Kiwi.GameObjects.Sprite(this, this.textures.ground, x, 600);
       groundBlock.alpha = 0;
       groundBlock.physics = groundBlock.components.add(new Kiwi.Components.ArcadePhysics(groundBlock, groundBlock.box));
       groundBlock.physics.immovable = true;
-      this.ground.addChild( groundBlock );
+      this.ground.addChild(groundBlock);
   }
 
-  this.missile = new Kiwi.GameObjects.Sprite( this, this.textures.missile, 500, 540);
-  this.missile.physics = this.missile.components.add(new Kiwi.Components.ArcadePhysics(this.missile, this.missile.box));
-  this.missile.physics.velocity.x = -50;
-  this.addChild( this.missile );
+  this.myspace = new Kiwi.GameObjects.Sprite(this, this.textures.myspace, 500, 540);
+  this.myspace.physics = this.myspace.components.add(new Kiwi.Components.ArcadePhysics(this.myspace, this.myspace.box));
+  this.myspace.physics.velocity.x = -50;
+  this.addChild(this.myspace);
 
-  this.sloth = new Kiwi.GameObjects.Sprite( this, this.textures.sloth, 500, 400);
-  this.sloth.animation.add( 'move', [0, 1], 1, true);
+  this.sloth = new Kiwi.GameObjects.Sprite(this, this.textures.sloth, 500, 400);
+  this.sloth.animation.add('move', [0, 1], 1, true);
   this.sloth.animation.play('move');
   this.sloth.physics = this.sloth.components.add(new Kiwi.Components.ArcadePhysics(this.sloth, this.sloth.box));
   this.sloth.physics.velocity.x = -30;
-  this.addChild( this.sloth );
+  this.addChild(this.sloth);
 
   this.scoreText = new Kiwi.GameObjects.Textfield(this, 'Score:', 10, 10, '#000');
-  this.addChild( this.scoreText );
+  this.addChild(this.scoreText);
 
   this.collisionState = false;
 
@@ -86,11 +84,11 @@ state.create = function () {
 
   // Create an object pool of bullets
   this.bulletPool = [];
-  for( var i = 0; i < this.NUMBER_OF_BULLETS; i++ ) {
+  for(var i = 0; i < this.NUMBER_OF_BULLETS; i++) {
       // Create each bullet and add it to the group.
-      var bullet = new Kiwi.GameObjects.Sprite( this, this.textures.poke, -100, -100 );
+      var bullet = new Kiwi.GameObjects.Sprite(this, this.textures.poke, -100, -100);
       bullet.physics = bullet.components.add(new Kiwi.Components.ArcadePhysics(bullet, bullet.box));
-      this.bulletPool.push( bullet );
+      this.bulletPool.push(bullet);
 
       // Set the pivot point to the center of the bullet
       bullet.anchorPointX = this.player.width * 0.5;
@@ -103,15 +101,15 @@ state.create = function () {
       bullet.alive = false;
   }
 
-  this.obstaclePool = new Kiwi.Group( this );
-  this.addChild( this.obstaclePool );
+  this.obstaclePool = new Kiwi.Group(this);
+  this.addChild(this.obstaclePool);
   this.obstaclesArray = new Array();
-  for ( var i = 0; i < this.NUMBER_OF_OBSTACLES; i++ ) {
-    var obstacle = new Kiwi.GameObjects.Sprite( this, this.textures.obstacle, 500, 400);
+  for (var i = 0; i < this.NUMBER_OF_OBSTACLES; i++) {
+    var obstacle = new Kiwi.GameObjects.Sprite(this, this.textures.obstacle, 500, 400);
     obstacle.physics = obstacle.components.add(new Kiwi.Components.ArcadePhysics(obstacle, obstacle.box));
     obstacle.physics.velocity.x = getRandomInt(-90, -50);
-    this.obstaclePool.addChild( obstacle);
-    var obstacleRect = new Kiwi.Geom.Rectangle( obstacle.x, obstacle.y, obstacle.width, obstacle.height );
+    this.obstaclePool.addChild(obstacle);
+    var obstacleRect = new Kiwi.Geom.Rectangle(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     var speed = getRandomInt(6, 9);
     var y = getRandomInt(1, 10);
     obstacle.y = obstacle.y - (y * 30);
@@ -125,14 +123,14 @@ state.create = function () {
 
 state.reset = function() {
   this.running = true;
-  this.missile.x = 800;
-  this.missile.y = 540;
+  this.myspace.x = 800;
+  this.myspace.y = 540;
   this.sloth.x = 800;
   this.sloth.y = getRandomInt(0, 500);
   this.score.counter.current = 0;
   this.player.physics.acceleration.y = this.GRAVITY;
   this.sloth.physics.velocity.x = -30;
-  this.missile.physics.velocity.x = -50;
+  this.myspace.physics.velocity.x = -50;
 
   this.obstaclePool.forEach(this, function(obstacle) {
     obstacle.x = 800;
@@ -150,7 +148,7 @@ state.reset = function() {
 };
 
 state.update = function () {
-  Kiwi.State.prototype.update.call( this );
+  Kiwi.State.prototype.update.call(this);
 
   // Collide the player with the ground
   this.player.physics.overlapsGroup(this.ground, true);
@@ -160,19 +158,19 @@ state.update = function () {
   }
 
   if (this.running) {
-    if(this.missile.x < -this.missile.width ) {
-      this.missile.x = 800;
-      this.missile.y = 540;
+    if(this.myspace.x < -this.myspace.width) {
+      this.myspace.x = 800;
+      this.myspace.y = 540;
     }
 
     this.bulletPool.forEach(this.checkBulletPosition, this);
 
-    var onTheGround = this.player.physics.isTouching( Kiwi.Components.ArcadePhysics.DOWN );
+    var onTheGround = this.player.physics.isTouching(Kiwi.Components.ArcadePhysics.DOWN);
     if (!onTheGround) {
 	     this.player.animation.switchTo(2);
     }
 
-    if(this.sloth.x < -this.sloth.width ) {
+    if(this.sloth.x < -this.sloth.width) {
         this.sloth.x = 800;
         this.sloth.y = getRandomInt(0, 500);
     }
@@ -184,7 +182,7 @@ state.update = function () {
 
       //obstacle.y = obstacle.y - obstacleObj.y;
       obstacleRect.x -= obstacleObj.speed;
-      if (obstacle.x < -obstacle.width ) {
+      if (obstacle.x < -obstacle.width) {
         obstacle.x = 800;
         obstacleRect.x = 800;
         obstacle.y = getRandomInt(0, 500);
@@ -196,7 +194,7 @@ state.update = function () {
       this.shootBullet();
     }
 
-    if (this.upKey.isDown && this.player.y > 50 ) {
+    if (this.upKey.isDown && this.player.y > 50) {
         this.player.physics.velocity.y = this.JUMP_SPEED;
       this.player.animation.switchTo(2);
     }
@@ -206,13 +204,13 @@ state.update = function () {
 }
 
 state.checkCollisions = function () {
-  if (this.player.physics.overlaps(this.missile) ||
+  if (this.player.physics.overlaps(this.myspace) ||
       this.player.physics.overlaps(this.sloth)) {
     this.running = false;
     this.player.physics.acceleration.y = 0;
     this.player.physics.velocity.y = 0;
     this.sloth.physics.velocity.x = 0;
-    this.missile.physics.velocity.x = 0;
+    this.myspace.physics.velocity.x = 0;
 
     this.obstaclePool.forEach(this, function(obstacle) {
       obstacle.physics.velocity.x = 0;
@@ -258,7 +256,7 @@ state.shootBullet = function() {
 
   // Revive the bullet
   // This makes the bullet "alive"
-  this.revive( bullet );
+  this.revive(bullet);
 
   // Set the bullet position to the gun position.
   bullet.x = this.player.x + (0.5 * this.player.width);
@@ -273,19 +271,19 @@ state.shootBullet = function() {
 
 state.getFirstDeadBullet = function () {
   for (var i = this.bulletPool.length - 1; i >= 0; i--) {
-    if ( !this.bulletPool[i].alive ) {
+    if (!this.bulletPool[i].alive) {
         return this.bulletPool[i];
     }
   };
   return null;
 }
 
-state.revive   = function ( bullet ){
+state.revive   = function (bullet){
   bullet.alive = true;
 }
-state.checkBulletPosition = function ( bullet ) {
-  if( bullet.x > this.game.stage.width || bullet.x < 0 ||
-      bullet.y > this.game.stage.height || bullet.y < 0 ){
+state.checkBulletPosition = function (bullet) {
+  if(bullet.x > this.game.stage.width || bullet.x < 0 ||
+      bullet.y > this.game.stage.height || bullet.y < 0){
     bullet.alive = false;
     this.removeChild(bullet);
   }
