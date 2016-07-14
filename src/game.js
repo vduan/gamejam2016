@@ -159,6 +159,17 @@ state.checkBulletPosition = function ( bullet ) {
 }
 
 state.update = function () {
+  Kiwi.State.prototype.update.call( this );
+
+  // Collide the player with the ground
+  this.player.physics.overlapsGroup(this.ground, true);
+
+  // Shoot bullets
+  if (this.spacebar.isDown) {
+      this.shootBullet();
+  }
+  this.bulletPool.forEach( this, this.checkBulletPosition );
+
   if (this.running) {
     Kiwi.State.prototype.update.call( this );
     this.missile.x -= 5;
@@ -169,17 +180,6 @@ state.update = function () {
       this.missile.y = 500;
       this.missilerect.y = this.missile.y;
     }
-
-    Kiwi.State.prototype.update.call( this );
-
-    // Collide the player with the ground
-    this.player.physics.overlapsGroup(this.ground, true);
-
-    // Shoot bullets
-    if (this.spacebar.isDown) {
-        this.shootBullet();
-    }
-    this.bulletPool.forEach( this, this.checkBulletPosition );
 
     this.missile.x -= 5;
     this.missilerect.x -= 5;
@@ -194,7 +194,7 @@ state.update = function () {
     var onTheGround = this.player.physics.isTouching( Kiwi.Components.ArcadePhysics.DOWN );
     if (!onTheGround) {
         this.player.animation.play( 'jump' );
-    } 
+    }
 
     this.sprite.x -= 10;
     this.spriterect.x -= 10;
