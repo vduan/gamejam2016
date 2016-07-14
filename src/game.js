@@ -77,7 +77,6 @@ state.create = function () {
   this.sloth.animation.add( 'move', [0, 1], 1, true);
   this.sloth.animation.play('move');
   this.addChild( this.sloth );
-  this.slothrect = new Kiwi.Geom.Rectangle( this.sloth.x, this.sloth.y, this.sloth.width, this.sloth.height );
 
   this.scoreText = new Kiwi.GameObjects.Textfield(this, 'Score:', 10, 10, '#000');
   this.addChild( this.scoreText );
@@ -135,12 +134,9 @@ state.update = function () {
     }
 
     this.sloth.x -= 3;
-    this.slothrect.x -= 3;
     if(this.sloth.x < -this.sloth.width ) {
         this.sloth.x = 800;
-        this.slothrect.x = 800;
         this.sloth.y = getRandomInt(0, 500);
-        this.slothrect.y = this.sloth.y;
     }
 
     if ( this.upKey.isDown && this.player.y > 50 ) {
