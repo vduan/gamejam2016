@@ -1,9 +1,4 @@
-FBInstant.loading.complete();
 var state = new Kiwi.State('Play');
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
 
 state.preload = function () {
 
@@ -107,6 +102,8 @@ state.create = function () {
   }
 
   this.running = true;
+
+  FBInstant.loading.complete();
 }
 
 state.update = function () {
@@ -116,6 +113,8 @@ state.update = function () {
   this.player.physics.overlapsGroup(this.ground, true);
 
   if (this.running) {
+    this.addScore(1);
+
     this.missile.x -= 5;
     if(this.missile.x < -this.missile.width ) {
   	 this.missile.x = 800;
@@ -160,58 +159,61 @@ state.checkCollisions = function () {
   }
 }
 
-state.addScore = function () {
-	this.score.counter.current += 10;
+state.addScore = function (value) {
+	this.score.counter.current += value;
 }
 
 state.shootBullet = function() {
-    // Enforce a short delay between shots by recording
-    // the time that each bullet is shot and testing if
-    // the amount of time since the last shot is more than
-    // the required delay.
-    if (this.lastBulletShotAt === undefined) this.lastBulletShotAt = 0;
-    if (this.game.time.now() - this.lastBulletShotAt < this.SHOT_DELAY) return;
-    this.lastBulletShotAt = this.game.time.now();
+  // Enforce a short delay between shots by recording
+  // the time that each bullet is shot and testing if
+  // the amount of time since the last shot is more than
+  // the required delay.
+  if (this.lastBulletShotAt === undefined) this.lastBulletShotAt = 0;
+  if (this.game.time.now() - this.lastBulletShotAt < this.SHOT_DELAY) return;
+  this.lastBulletShotAt = this.game.time.now();
 
-    // Get a dead bullet from the pool
-    var bullet = this.getFirstDeadBullet();
+  // Get a dead bullet from the pool
+  var bullet = this.getFirstDeadBullet();
 
-    // If there aren't any bullets available then don't shoot
-    if (bullet === null || bullet === undefined) return;
+  // If there aren't any bullets available then don't shoot
+  if (bullet === null || bullet === undefined) return;
 
-    // Revive the bullet
-    // This makes the bullet "alive"
-    this.revive( bullet );
+  // Revive the bullet
+  // This makes the bullet "alive"
+  this.revive( bullet );
 
-    // Set the bullet position to the gun position.
-    bullet.x = this.player.x + (0.5 * this.player.width);
-    bullet.y = this.player.y + (0.5 * this.player.height);
+  // Set the bullet position to the gun position.
+  bullet.x = this.player.x + (0.5 * this.player.width);
+  bullet.y = this.player.y + (0.5 * this.player.height);
 
-    // Shoot it
-    bullet.physics.velocity.x = this.BULLET_SPEED;
-    bullet.physics.velocity.y = 0;
+  // Shoot it
+  bullet.physics.velocity.x = this.BULLET_SPEED;
+  bullet.physics.velocity.y = 0;
 };
 
 state.getFirstDeadBullet = function () {
-    var bullets = this.bulletPool.members;
+  var bullets = this.bulletPool.members;
 
-    for (var i = bullets.length - 1; i >= 0; i--) {
-        if ( !bullets[i].alive ) {
-            return bullets[i];
-        }
-    };
-    return null;
+  for (var i = bullets.length - 1; i >= 0; i--) {
+    if ( !bullets[i].alive ) {
+        return bullets[i];
+    }
+  };
+  return null;
 }
 
 state.revive   = function ( bullet ){
-    bullet.alive = true;
+  bullet.alive = true;
 }
 state.checkBulletPosition = function ( bullet ) {
+  if( bullet.x > this.game.stage.width || bullet.x < 0 ||
+      bullet.y > this.game.stage.height || bullet.y < 0 ){
+    bullet.alive = false;
+  }
+}
 
-    if( bullet.x > this.game.stage.width || bullet.x < 0 ||
-        bullet.y > this.game.stage.height || bullet.y < 0 ){
-        bullet.alive = false;
-    }
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
 }
 
 var gameOptions = {
