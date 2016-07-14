@@ -65,6 +65,7 @@ state.create = function () {
 
   this.missile = new Kiwi.GameObjects.Sprite( this, this.textures.missile, 500, 540);
   this.missile.physics = this.missile.components.add(new Kiwi.Components.ArcadePhysics(this.missile, this.missile.box));
+  this.missile.physics.velocity.x = -50;
   this.addChild( this.missile );
 
   this.sloth = new Kiwi.GameObjects.Sprite( this, this.textures.sloth, 500, 400);
@@ -129,6 +130,12 @@ state.reset = function() {
   this.score.counter.current = 0;
   this.player.physics.acceleration.y = this.GRAVITY;
   this.sloth.physics.velocity.x = -30;
+  this.missile.physics.velocity.x = -50;
+
+  this.obstaclePool.forEach(this, function(obstacle) {
+    obstacle.x = 800;
+    obstacle.y = getRandomInt(0, 500);
+  });
 
   this.sloth.animation.play('move');
   this.player.animation.play('run');
@@ -148,7 +155,6 @@ state.update = function () {
   if (this.running) {
     this.addScore(1);
 
-    this.missile.x -= 5;
     if(this.missile.x < -this.missile.width ) {
       this.missile.x = 800;
       this.missile.y = 540;
@@ -202,6 +208,7 @@ state.checkCollisions = function () {
     this.player.physics.acceleration.y = 0;
     this.player.physics.velocity.y = 0;
     this.sloth.physics.velocity.x = 0;
+    this.missile.physics.velocity.x = 0;
 
     this.sloth.animation.stop('move');
     this.player.animation.stop('run');
