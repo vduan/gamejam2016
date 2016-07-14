@@ -204,8 +204,7 @@ state.update = function () {
         this.spriterect.y = this.sprite.y;
     }
 
-    if ( this.upKey.isDown ) {
-        // Jump when the player is touching the ground and the up arrow is pressed
+    if ( this.upKey.isDown && this.player.y > 50 ) {
         this.player.physics.velocity.y = this.JUMP_SPEED;
     }
 
