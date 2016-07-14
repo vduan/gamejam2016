@@ -8,7 +8,7 @@ function getRandomInt(min, max) {
 state.preload = function () {
 
   this.addImage( 'grid', './assets/img/background/background_1.png' );
-  this.addImage( 'player', './assets/img/logo/rocket.png' );
+  this.addSpriteSheet('player', './assets/img/fox/spritesheet_small.png', 100, 95 );
   this.addImage( 'missile', './assets/img/anime/missile.png');
 
   this.score = new Kiwi.HUD.Widget.BasicScore( this.game, 50, 50, 0 );
@@ -44,7 +44,11 @@ state.create = function () {
   this.spacebar = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.SPACEBAR, true);
 
   // Enable physics on the player
-  this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 350, 540 );
+  this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 100, 95 );
+  this.player.animation.add( 'run', [ 0, 1 ], 0.1, true );
+  this.player.animation.add( 'jump' [  1  ], 0.1, true );
+  this.player.animation.play( 'run' );
+
   this.player.physics = this.player.components.add(new Kiwi.Components.ArcadePhysics(this.player, this.player.box));
   this.player.physics.acceleration.y = this.GRAVITY;
   this.player.physics.maxVelocity = this.MAX_SPEED;
@@ -168,6 +172,11 @@ state.update = function () {
     this.missile.y = getRandomInt(0, 500);
     this.missilerect.y = this.missile.y;
   }
+
+  var onTheGround = this.player.physics.isTouching( Kiwi.Components.ArcadePhysics.DOWN );
+  if (!onTheGround) {
+    this.player.animation.play( 'jump' );
+  } 
 
   if ( this.upKey.isDown ) {
       // Jump when the player is touching the ground and the up arrow is pressed
