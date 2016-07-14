@@ -9,7 +9,7 @@ state.preload = function () {
 
   this.addImage( 'grid', './assets/img/background/background_1.png' );
   this.addSpriteSheet('player', './assets/img/fox/spritesheet_small.png', 100, 95 );
-  this.addImage( 'missile', './assets/img/anime/missile.png');
+  this.addImage( 'missile', './assets/img/anime/myspace.jpg');
   this.addImage( 'sprite', './assets/img/anime/sprite.png');
 
   this.score = new Kiwi.HUD.Widget.BasicScore( this.game, 50, 50, 0 );
