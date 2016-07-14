@@ -39,9 +39,10 @@ state.create = function () {
 
   this.upKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.UP, true );
   this.spaceKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.SPACEBAR, true );
+  this.downKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.DOWN, true );
 
   // Enable physics on the player
-  this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 100, 95 );
+  this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 100, 500 );
   this.player.animation.add( 'run', [ 2, 0, 1 ], 0.07, true, true );
 
   this.player.physics = this.player.components.add(new Kiwi.Components.ArcadePhysics(this.player, this.player.box));
@@ -119,18 +120,30 @@ state.create = function () {
   FBInstant.loading.complete();
 }
 
+state.reset = function() {
+  this.running = true;
+  this.missile.x = 800;
+  this.missile.y = 540;
+  this.score.counter.current = 0;
+  FBInstant.loading.complete();
+};
+
 state.update = function () {
   Kiwi.State.prototype.update.call( this );
 
   // Collide the player with the ground
   this.player.physics.overlapsGroup(this.ground, true);
 
+  if (this.downKey.isDown) {
+    this.reset();
+  }
+
   if (this.running) {
     this.addScore(1);
 
     this.missile.x -= 5;
     if(this.missile.x < -this.missile.width ) {
-  	 this.missile.x = 800;
+      this.missile.x = 800;
       this.missile.y = 540;
     }
 
@@ -184,7 +197,7 @@ state.checkCollisions = function () {
     FBInstant.game.setScore(this.score.counter.current);
     var promise = FBInstant.game.asyncYieldControl();
     promise.then(function() {
-      this.running = true;
+      state.reset();
     });
   }
 }
