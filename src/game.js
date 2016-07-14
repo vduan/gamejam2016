@@ -123,7 +123,10 @@ state.reset = function() {
   this.running = true;
   this.missile.x = 800;
   this.missile.y = 540;
+  this.sloth.x = 800;
+  this.sloth.y = getRandomInt(0, 500);
   this.score.counter.current = 0;
+  this.player.physics.acceleration.y = this.GRAVITY;
   FBInstant.loading.complete();
 };
 
@@ -189,8 +192,11 @@ state.update = function () {
 }
 
 state.checkCollisions = function () {
-  if (this.player.physics.overlaps(this.missile)) {
+  if (this.player.physics.overlaps(this.missile) ||
+      this.player.physics.overlaps(this.sloth)) {
     this.running = false;
+    this.player.physics.acceleration.y = 0;
+    this.player.physics.velocity.y = 0;
 
     FBInstant.game.setScore(this.score.counter.current);
     var promise = FBInstant.game.asyncYieldControl();
