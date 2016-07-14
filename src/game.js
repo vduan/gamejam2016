@@ -41,9 +41,7 @@ state.create = function () {
 
   // Enable physics on the player
   this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 100, 95 );
-  this.player.animation.add( 'run', [ 0, 1 ], 0.1, true );
-  this.player.animation.add( 'jump' [  1  ], 0.1, true );
-  this.player.animation.play( 'run' );
+  this.player.animation.add( 'run', [ 2, 0, 1 ], 0.07, true, true );
 
   this.player.physics = this.player.components.add(new Kiwi.Components.ArcadePhysics(this.player, this.player.box));
   this.player.physics.acceleration.y = this.GRAVITY;
@@ -126,7 +124,7 @@ state.update = function () {
 
     var onTheGround = this.player.physics.isTouching( Kiwi.Components.ArcadePhysics.DOWN );
     if (!onTheGround) {
-        this.player.animation.play( 'jump' );
+	this.player.animation.switchTo(2);
     }
 
     this.sloth.x -= 3;
@@ -137,6 +135,7 @@ state.update = function () {
 
     if ( this.upKey.isDown && this.player.y > 50 ) {
         this.player.physics.velocity.y = this.JUMP_SPEED;
+	this.player.animation.switchTo(2);
     }
 
     this.checkCollisions();
