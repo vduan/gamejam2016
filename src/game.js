@@ -111,6 +111,11 @@ state.create = function () {
 state.update = function () {
   Kiwi.State.prototype.update.call( this );
 
+  this.playerrect.x = this.player.x;
+  this.playerrect.y = this.player.y;
+  this.playerrect.width = this.player.width;
+  this.playerrect.height = this.player.height;
+
   // Collide the player with the ground
   this.player.physics.overlapsGroup(this.ground, true);
 
@@ -163,11 +168,6 @@ state.update = function () {
 }
 
 state.checkCollisions = function () {
-  this.playerrect.x = this.player.x;
-  this.playerrect.y = this.player.y;
-  this.playerrect.width = this.player.width;
-  this.playerrect.height = this.player.height;
-
   if (Kiwi.Geom.Intersect.rectangleToRectangle(this.playerrect, this.missilerect).result) {
     console.log('yay');
     this.running = false;
