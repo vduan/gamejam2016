@@ -11,9 +11,17 @@ state.preload = function () {
   this.addImage( 'player', './assets/img/logo/rocket.png' );
   this.addImage( 'missile', './assets/img/anime/missile.png');
   this.addImage( 'poke', './assets/img/pokeb.png' );
+  this.addSpriteSheet('ground', './assets/img/shapes/square.png', 70, 70 );
 };
 
 state.create = function () {
+
+  // Define movement constants
+  this.MAX_SPEED = 75; // pixels/second
+  this.ACCERATION = 75;
+  this.DRAG = 50;
+  this.GRAVITY = 200;
+  this.JUMP_SPEED = -200;
 
   this.SHOT_DELAY = 100; // milliseconds (10 bullets/second)
   this.BULLET_SPEED = 100; // pixels/second
@@ -30,9 +38,26 @@ state.create = function () {
   this.leftKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.LEFT, true );
   this.spacebar = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.SPACEBAR, true);
 
+  // Enable physics on the player
   this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 350, 540 );
+  this.player.physics = this.player.components.add(new Kiwi.Components.ArcadePhysics(this.player, this.player.box));
+  this.player.physics.acceleration.y = this.GRAVITY;
+  this.player.physics.maxVelocity = this.MAX_SPEED;
+  this.player.physics.drag.x = this.DRAG;
   this.addChild( this.player );
   this.playerrect = new Kiwi.Geom.Rectangle( this.player.x, this.player.y, this.player.width, this.player.height );
+
+  // Create some ground for the player to walk on
+  this.ground = new Kiwi.Group( this );
+  this.addChild( this.ground );
+  for(var x = 0; x < this.game.stage.width; x += 70) {
+      // Add the ground blocks, enable physics on each, make them immovable
+      var groundBlock = new Kiwi.GameObjects.Sprite(this, this.textures.ground, x, 600 );
+      groundBlock.alpha = 0;
+      groundBlock.physics = groundBlock.components.add(new Kiwi.Components.ArcadePhysics(groundBlock, groundBlock.box));
+      groundBlock.physics.immovable = true;
+      this.ground.addChild( groundBlock );
+  }
 
   this.missile = new Kiwi.GameObjects.Sprite( this, this.textures.missile, 500, 400);
   this.addChild( this.missile );
@@ -115,6 +140,9 @@ state.checkBulletPosition = function ( bullet ) {
 state.update = function () {
   Kiwi.State.prototype.update.call( this );
 
+  // Collide the player with the ground
+  this.player.physics.overlapsGroup(this.ground, true);
+
   // Shoot bullets
   if (this.spacebar.isDown) {
       this.shootBullet();
@@ -128,6 +156,11 @@ state.update = function () {
     this.missilerect.x = 800;
     this.missile.y = getRandomInt(0, 500);
     this.missilerect.y = this.missile.y;
+  }
+
+  if ( this.upKey.isDown ) {
+      // Jump when the player is touching the ground and the up arrow is pressed
+      this.player.physics.velocity.y = this.JUMP_SPEED;
   }
 
   this.checkCollisions();
