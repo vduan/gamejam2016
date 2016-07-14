@@ -10,6 +10,7 @@ state.preload = function () {
   this.addImage( 'grid', './assets/img/background/background_1.png' );
   this.addImage( 'player', './assets/img/logo/rocket.png' );
   this.addImage( 'missile', './assets/img/anime/missile.png');
+  this.addImage( 'sprite', './assets/img/anime/sprite.png');
 
   this.score = new Kiwi.HUD.Widget.BasicScore( this.game, 50, 50, 0 );
   this.game.huds.defaultHUD.addWidget( this.score );
@@ -67,6 +68,10 @@ state.create = function () {
   this.missile = new Kiwi.GameObjects.Sprite( this, this.textures.missile, 500, 400);
   this.addChild( this.missile );
   this.missilerect = new Kiwi.Geom.Rectangle( this.missile.x, this.missile.y, this.missile.width, this.missile.height );
+
+  this.sprite = new Kiwi.GameObjects.Sprite( this, this.textures.sprite, 500, 400);
+  this.addChild( this.sprite );
+  this.spriterect = new Kiwi.Geom.Rectangle( this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height );
 
   this.scoreText = new Kiwi.GameObjects.Textfield(this, 'Score:', 10, 10, '#000');
   this.addChild( this.scoreText );
@@ -162,11 +167,20 @@ state.update = function () {
   this.missile.x -= 5;
   this.missilerect.x -= 5;
   if(this.missile.x < -this.missile.width ) {
-   this.collisionState = false;
-	 this.missile.x = 800;
+    this.collisionState = false;
+	  this.missile.x = 800;
     this.missilerect.x = 800;
     this.missile.y = getRandomInt(0, 500);
     this.missilerect.y = this.missile.y;
+  }
+
+  this.sprite.x -= 10;
+  this.spriterect.x -= 10;
+  if(this.sprite.x < -this.sprite.width ) {
+    this.sprite.x = 800;
+    this.spriterect.x = 800;
+    this.sprite.y = getRandomInt(0, 500);
+    this.spriterect.y = this.sprite.y;
   }
 
   if ( this.upKey.isDown ) {
