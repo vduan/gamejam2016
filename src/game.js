@@ -11,6 +11,7 @@ state.preload = function () {
   this.addSpriteSheet('player', './assets/img/fox/spritesheet_small.png', 100, 95 );
   this.addImage( 'missile', './assets/img/anime/myspace.jpg');
   this.addImage( 'sprite', './assets/img/anime/sprite.png');
+  this.addSpriteSheet( 'sloth', './assets/img/anime/obstacle_peer_review.png', 100, 100 );
 
   this.score = new Kiwi.HUD.Widget.BasicScore( this.game, 50, 50, 0 );
   this.game.huds.defaultHUD.addWidget( this.score );
@@ -70,12 +71,14 @@ state.create = function () {
   }
 
   this.missile = new Kiwi.GameObjects.Sprite( this, this.textures.missile, 500, 540);
+  this.missile.physics = this.missile.components.add(new Kiwi.Components.ArcadePhysics(this.missile, this.missile.box));
   this.addChild( this.missile );
-  this.missilerect = new Kiwi.Geom.Rectangle( this.missile.x, this.missile.y, this.missile.width, this.missile.height );
 
-  this.sprite = new Kiwi.GameObjects.Sprite( this, this.textures.sprite, 500, 400);
-  this.addChild( this.sprite );
-  this.spriterect = new Kiwi.Geom.Rectangle( this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height );
+  this.sloth = new Kiwi.GameObjects.Sprite( this, this.textures.sloth, 500, 400);
+  this.sloth.animation.add( 'move', [0, 1], 1, true);
+  this.sloth.animation.play('move');
+  this.addChild( this.sloth );
+  this.slothrect = new Kiwi.Geom.Rectangle( this.sloth.x, this.sloth.y, this.sloth.width, this.sloth.height );
 
   this.scoreText = new Kiwi.GameObjects.Textfield(this, 'Score:', 10, 10, '#000');
   this.addChild( this.scoreText );
@@ -121,12 +124,9 @@ state.update = function () {
 
   if (this.running) {
     this.missile.x -= 5;
-    this.missilerect.x -= 5;
     if(this.missile.x < -this.missile.width ) {
   	 this.missile.x = 800;
-      this.missilerect.x = 800;
       this.missile.y = 540;
-      this.missilerect.y = this.missile.y;
     }
 
     // Shoot bullets
@@ -140,13 +140,13 @@ state.update = function () {
         this.player.animation.play( 'jump' );
     }
 
-    this.sprite.x -= 10;
-    this.spriterect.x -= 10;
-    if(this.sprite.x < -this.sprite.width ) {
-        this.sprite.x = 800;
-        this.spriterect.x = 800;
-        this.sprite.y = getRandomInt(0, 500);
-        this.spriterect.y = this.sprite.y;
+    this.sloth.x -= 3;
+    this.slothrect.x -= 3;
+    if(this.sloth.x < -this.sloth.width ) {
+        this.sloth.x = 800;
+        this.slothrect.x = 800;
+        this.sloth.y = getRandomInt(0, 500);
+        this.slothrect.y = this.sloth.y;
     }
 
     if ( this.upKey.isDown && this.player.y > 50 ) {
@@ -158,7 +158,7 @@ state.update = function () {
 }
 
 state.checkCollisions = function () {
-  if (Kiwi.Geom.Intersect.rectangleToRectangle(this.playerrect, this.missilerect).result) {
+  if (this.player.physics.overlaps(this.missile)) {
     console.log('yay');
     this.running = false;
 
