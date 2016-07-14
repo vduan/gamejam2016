@@ -38,7 +38,6 @@ state.create = function () {
   this.downKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.DOWN, true );
   this.rightKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.RIGHT, true );
   this.leftKey = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.LEFT, true );
-  this.spacebar = this.game.input.keyboard.addKey( Kiwi.Input.Keycodes.SPACEBAR, true);
 
   // Enable physics on the player
   this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 100, 95 );
@@ -123,10 +122,6 @@ state.update = function () {
       this.missile.y = 540;
     }
 
-    // Shoot bullets
-    if (this.spacebar.isDown) {
-        this.shootBullet();
-    }
     this.bulletPool.forEach( this, this.checkBulletPosition );
 
     var onTheGround = this.player.physics.isTouching( Kiwi.Components.ArcadePhysics.DOWN );
@@ -170,6 +165,7 @@ state.shootBullet = function() {
   // the time that each bullet is shot and testing if
   // the amount of time since the last shot is more than
   // the required delay.
+  if (!this.running) return;
   if (this.lastBulletShotAt === undefined) this.lastBulletShotAt = 0;
   if (this.game.time.now() - this.lastBulletShotAt < this.SHOT_DELAY) return;
   this.lastBulletShotAt = this.game.time.now();
@@ -224,3 +220,10 @@ var gameOptions = {
 };
 
 var game = new Kiwi.Game('game-container', 'Basic Follow', state, gameOptions);
+
+// Shoot bullets on spacebar
+document.body.onkeyup = function(e){
+    if(e.keyCode == 32){
+        state.shootBullet();
+    }
+}
