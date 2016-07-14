@@ -108,56 +108,6 @@ state.create = function () {
   this.running = true;
 }
 
-state.shootBullet = function() {
-    // Enforce a short delay between shots by recording
-    // the time that each bullet is shot and testing if
-    // the amount of time since the last shot is more than
-    // the required delay.
-    if (this.lastBulletShotAt === undefined) this.lastBulletShotAt = 0;
-    if (this.game.time.now() - this.lastBulletShotAt < this.SHOT_DELAY) return;
-    this.lastBulletShotAt = this.game.time.now();
-
-    // Get a dead bullet from the pool
-    var bullet = this.getFirstDeadBullet();
-
-    // If there aren't any bullets available then don't shoot
-    if (bullet === null || bullet === undefined) return;
-
-    // Revive the bullet
-    // This makes the bullet "alive"
-    this.revive( bullet );
-
-    // Set the bullet position to the gun position.
-    bullet.x = this.player.x + (0.5 * this.player.width);
-    bullet.y = this.player.y + (0.5 * this.player.height);
-
-    // Shoot it
-    bullet.physics.velocity.x = this.BULLET_SPEED;
-    bullet.physics.velocity.y = 0;
-};
-
-state.getFirstDeadBullet = function () {
-    var bullets = this.bulletPool.members;
-
-    for (var i = bullets.length - 1; i >= 0; i--) {
-        if ( !bullets[i].alive ) {
-            return bullets[i];
-        }
-    };
-    return null;
-}
-
-state.revive   = function ( bullet ){
-    bullet.alive = true;
-}
-state.checkBulletPosition = function ( bullet ) {
-
-    if( bullet.x > this.game.stage.width || bullet.x < 0 ||
-        bullet.y > this.game.stage.height || bullet.y < 0 ){
-        bullet.alive = false;
-    }
-}
-
 state.update = function () {
   Kiwi.State.prototype.update.call( this );
 
@@ -232,6 +182,56 @@ state.checkCollisions = function () {
 
 state.addScore = function () {
 	this.score.counter.current += 10;
+}
+
+state.shootBullet = function() {
+    // Enforce a short delay between shots by recording
+    // the time that each bullet is shot and testing if
+    // the amount of time since the last shot is more than
+    // the required delay.
+    if (this.lastBulletShotAt === undefined) this.lastBulletShotAt = 0;
+    if (this.game.time.now() - this.lastBulletShotAt < this.SHOT_DELAY) return;
+    this.lastBulletShotAt = this.game.time.now();
+
+    // Get a dead bullet from the pool
+    var bullet = this.getFirstDeadBullet();
+
+    // If there aren't any bullets available then don't shoot
+    if (bullet === null || bullet === undefined) return;
+
+    // Revive the bullet
+    // This makes the bullet "alive"
+    this.revive( bullet );
+
+    // Set the bullet position to the gun position.
+    bullet.x = this.player.x + (0.5 * this.player.width);
+    bullet.y = this.player.y + (0.5 * this.player.height);
+
+    // Shoot it
+    bullet.physics.velocity.x = this.BULLET_SPEED;
+    bullet.physics.velocity.y = 0;
+};
+
+state.getFirstDeadBullet = function () {
+    var bullets = this.bulletPool.members;
+
+    for (var i = bullets.length - 1; i >= 0; i--) {
+        if ( !bullets[i].alive ) {
+            return bullets[i];
+        }
+    };
+    return null;
+}
+
+state.revive   = function ( bullet ){
+    bullet.alive = true;
+}
+state.checkBulletPosition = function ( bullet ) {
+
+    if( bullet.x > this.game.stage.width || bullet.x < 0 ||
+        bullet.y > this.game.stage.height || bullet.y < 0 ){
+        bullet.alive = false;
+    }
 }
 
 var gameOptions = {
