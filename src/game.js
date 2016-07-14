@@ -212,6 +212,7 @@ state.checkCollisions = function () {
   }
 
   this.bulletPool.forEach(this.checkBulletCollision, this);
+  this.obstaclePool.forEach(this, this.checkObstacleCollision);
 }
 
 state.addScore = function (value) {
@@ -276,6 +277,15 @@ state.checkBulletCollision = function (bullet) {
 
     this.sloth.x = 800;
     this.sloth.y = getRandomInt(0, 500);
+
+    this.addScore(100);
+  }
+};
+
+state.checkObstacleCollision = function (obstacle) {
+  if (this.player.physics.overlaps(obstacle)) {
+    obstacle.x = 800;
+    obstacle.y = getRandomInt(0, 500);
 
     this.addScore(100);
   }
