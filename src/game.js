@@ -83,13 +83,12 @@ state.create = function () {
   this.player.anchorPointY = this.player.height * 0.5;
 
   // Create an object pool of bullets
-  this.bulletPool = new Kiwi.Group( this );
-  this.addChild ( this.bulletPool );
+  this.bulletPool = [];
   for( var i = 0; i < this.NUMBER_OF_BULLETS; i++ ) {
       // Create each bullet and add it to the group.
       var bullet = new Kiwi.GameObjects.Sprite( this, this.textures.poke, -100, -100 );
       bullet.physics = bullet.components.add(new Kiwi.Components.ArcadePhysics(bullet, bullet.box));
-      this.bulletPool.addChild( bullet );
+      this.bulletPool.push( bullet );
 
       // Set the pivot point to the center of the bullet
       bullet.anchorPointX = this.player.width * 0.5;
@@ -147,7 +146,7 @@ state.update = function () {
       this.missile.y = 540;
     }
 
-    this.bulletPool.forEach( this, this.checkBulletPosition );
+    this.bulletPool.forEach(this.checkBulletPosition, this);
 
     var onTheGround = this.player.physics.isTouching( Kiwi.Components.ArcadePhysics.DOWN );
     if (!onTheGround) {
@@ -191,7 +190,6 @@ state.update = function () {
 
 state.checkCollisions = function () {
   if (this.player.physics.overlaps(this.missile)) {
-    console.log('yay');
     this.running = false;
 
     FBInstant.game.setScore(this.score.counter.current);
@@ -200,6 +198,8 @@ state.checkCollisions = function () {
       state.reset();
     });
   }
+
+  this.bulletPool.forEach(this.checkBulletCollision, this);
 }
 
 state.addScore = function (value) {
@@ -233,14 +233,14 @@ state.shootBullet = function() {
   // Shoot it
   bullet.physics.velocity.x = this.BULLET_SPEED;
   bullet.physics.velocity.y = 0;
+
+  this.addChild(bullet);
 };
 
 state.getFirstDeadBullet = function () {
-  var bullets = this.bulletPool.members;
-
-  for (var i = bullets.length - 1; i >= 0; i--) {
-    if ( !bullets[i].alive ) {
-        return bullets[i];
+  for (var i = this.bulletPool.length - 1; i >= 0; i--) {
+    if ( !this.bulletPool[i].alive ) {
+        return this.bulletPool[i];
     }
   };
   return null;
@@ -253,8 +253,19 @@ state.checkBulletPosition = function ( bullet ) {
   if( bullet.x > this.game.stage.width || bullet.x < 0 ||
       bullet.y > this.game.stage.height || bullet.y < 0 ){
     bullet.alive = false;
+    this.removeChild(bullet);
   }
 }
+
+state.checkBulletCollision = function (bullet) {
+  if (this.sloth.physics.overlaps(bullet)) {
+    bullet.alive = false;
+    this.removeChild(bullet);
+
+    this.sloth.x = 800;
+    this.sloth.y = getRandomInt(0, 500);
+  }
+};
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
