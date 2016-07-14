@@ -71,6 +71,7 @@ state.create = function () {
   this.sloth = new Kiwi.GameObjects.Sprite( this, this.textures.sloth, 500, 400);
   this.sloth.animation.add( 'move', [0, 1], 1, true);
   this.sloth.animation.play('move');
+  this.sloth.physics = this.sloth.components.add(new Kiwi.Components.ArcadePhysics(this.sloth, this.sloth.box));
   this.addChild( this.sloth );
 
   this.scoreText = new Kiwi.GameObjects.Textfield(this, 'Score:', 10, 10, '#000');
@@ -88,6 +89,7 @@ state.create = function () {
   for( var i = 0; i < this.NUMBER_OF_BULLETS; i++ ) {
       // Create each bullet and add it to the group.
       var bullet = new Kiwi.GameObjects.Sprite( this, this.textures.poke, -100, -100 );
+      bullet.physics = bullet.components.add(new Kiwi.Components.ArcadePhysics(bullet, bullet.box));
       this.bulletPool.addChild( bullet );
 
       // Set the pivot point to the center of the bullet
