@@ -56,7 +56,6 @@ state.create = function () {
   this.player.physics.maxVelocity = this.MAX_SPEED;
   this.player.physics.drag.x = this.DRAG;
   this.addChild( this.player );
-  this.playerrect = new Kiwi.Geom.Rectangle( this.player.x, this.player.y, this.player.width, this.player.height );
 
   // Create some ground for the player to walk on
   this.ground = new Kiwi.Group( this );
@@ -113,11 +112,6 @@ state.create = function () {
 
 state.update = function () {
   Kiwi.State.prototype.update.call( this );
-
-  this.playerrect.x = this.player.x;
-  this.playerrect.y = this.player.y;
-  this.playerrect.width = this.player.width;
-  this.playerrect.height = this.player.height;
 
   // Collide the player with the ground
   this.player.physics.overlapsGroup(this.ground, true);
