@@ -127,6 +127,9 @@ state.reset = function() {
   this.sloth.y = getRandomInt(0, 500);
   this.score.counter.current = 0;
   this.player.physics.acceleration.y = this.GRAVITY;
+
+  this.sloth.animation.play('move');
+  this.player.animation.play('run');
   FBInstant.loading.complete();
 };
 
@@ -197,6 +200,9 @@ state.checkCollisions = function () {
     this.running = false;
     this.player.physics.acceleration.y = 0;
     this.player.physics.velocity.y = 0;
+
+    this.sloth.animation.stop('move');
+    this.player.animation.stop('run');
 
     FBInstant.game.setScore(this.score.counter.current);
     var promise = FBInstant.game.asyncYieldControl();
