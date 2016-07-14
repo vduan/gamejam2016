@@ -222,7 +222,7 @@ var gameOptions = {
 var game = new Kiwi.Game('game-container', 'Basic Follow', state, gameOptions);
 
 // Shoot bullets on spacebar
-document.body.onkeyup = function(e){
+document.body.onkeydown = function(e){
     if(e.keyCode == 32){
         state.shootBullet();
     }
