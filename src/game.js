@@ -156,8 +156,6 @@ state.update = function () {
   }
 
   if (this.running) {
-    this.addScore(1);
-
     if(this.missile.x < -this.missile.width ) {
       this.missile.x = 800;
       this.missile.y = 540;
