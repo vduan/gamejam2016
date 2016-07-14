@@ -24,9 +24,9 @@ state.create = function () {
 
   // Define movement constants
   this.MAX_SPEED = 75; // pixels/second
-  this.ACCERATION = 75;
+  this.ACCERATION = 100;
   this.DRAG = 50;
-  this.GRAVITY = 200;
+  this.GRAVITY = 150;
   this.JUMP_SPEED = -200;
 
   this.SHOT_DELAY = 100; // milliseconds (10 bullets/second)
@@ -164,14 +164,7 @@ state.update = function () {
   // Collide the player with the ground
   this.player.physics.overlapsGroup(this.ground, true);
 
-  // Shoot bullets
-  if (this.spacebar.isDown) {
-      this.shootBullet();
-  }
-  this.bulletPool.forEach( this, this.checkBulletPosition );
-
   if (this.running) {
-    Kiwi.State.prototype.update.call( this );
     this.missile.x -= 5;
     this.missilerect.x -= 5;
     if(this.missile.x < -this.missile.width ) {
@@ -190,6 +183,12 @@ state.update = function () {
         this.missile.y = getRandomInt(0, 500);
         this.missilerect.y = this.missile.y;
     }
+
+    // Shoot bullets
+    if (this.spacebar.isDown) {
+        this.shootBullet();
+    }
+    this.bulletPool.forEach( this, this.checkBulletPosition );
 
     var onTheGround = this.player.physics.isTouching( Kiwi.Components.ArcadePhysics.DOWN );
     if (!onTheGround) {
