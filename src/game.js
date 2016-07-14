@@ -6,6 +6,8 @@ state.preload = function () {
   this.addSpriteSheet('player', './assets/img/fox/spritesheet_small.png', 100, 95 );
   this.addImage( 'missile', './assets/img/anime/myspace.jpg');
   this.addImage( 'sprite', './assets/img/anime/sprite.png');
+  this.addImage( 'obstacle', './assets/img/anime/sprite.png');
+
   this.addSpriteSheet( 'sloth', './assets/img/anime/obstacle_peer_review.png', 100, 100 );
 
   this.score = new Kiwi.HUD.Widget.BasicScore( this.game, 50, 50, 0 );
@@ -28,6 +30,7 @@ state.create = function () {
   this.SHOT_DELAY = 100; // milliseconds (10 bullets/second)
   this.BULLET_SPEED = 100; // pixels/second
   this.NUMBER_OF_BULLETS = 20;
+  this.NUMBER_OF_OBSTACLES = 3;
 
   this.background = new Kiwi.GameObjects.StaticImage( this, this.textures.grid, 0, 0 );
   this.addChild(this.background);
@@ -41,9 +44,7 @@ state.create = function () {
 
   // Enable physics on the player
   this.player = new Kiwi.GameObjects.Sprite( this, this.textures.player, 100, 95 );
-  this.player.animation.add( 'run', [ 0, 1 ], 0.1, true );
-  this.player.animation.add( 'jump' [  1  ], 0.1, true );
-  this.player.animation.play( 'run' );
+  this.player.animation.add( 'run', [ 2, 0, 1 ], 0.07, true, true );
 
   this.player.physics = this.player.components.add(new Kiwi.Components.ArcadePhysics(this.player, this.player.box));
   this.player.physics.acceleration.y = this.GRAVITY;
@@ -102,6 +103,19 @@ state.create = function () {
       bullet.alive = false;
   }
 
+  this.obstaclePool = new Kiwi.Group( this );
+  this.addChild( this.obstaclePool );
+  this.obstaclesArray = new Array(); 
+  for ( var i = 0; i < this.NUMBER_OF_OBSTACLES; i++ ) {
+    var obstacle = new Kiwi.GameObjects.Sprite( this, this.textures.obstacle, 500, 400);
+    this.obstaclePool.addChild( obstacle);
+    var obstacleRect = new Kiwi.Geom.Rectangle( obstacle.x, obstacle.y, obstacle.width, obstacle.height );
+    var speed = getRandomInt(6, 9);
+    var y = getRandomInt(1, 10);
+    obstacle.y = obstacle.y - (y * 30);
+    this.obstaclesArray.push({obstacle: obstacle, obstacleRect: obstacleRect, speed: speed, y:y});
+  }  
+
   this.running = true;
 
   FBInstant.loading.complete();
@@ -126,7 +140,7 @@ state.update = function () {
 
     var onTheGround = this.player.physics.isTouching( Kiwi.Components.ArcadePhysics.DOWN );
     if (!onTheGround) {
-        this.player.animation.play( 'jump' );
+	this.player.animation.switchTo(2);
     }
 
     this.sloth.x -= 3;
@@ -135,8 +149,25 @@ state.update = function () {
         this.sloth.y = getRandomInt(0, 500);
     }
 
+    for (var i = 0; i < this.obstaclesArray.length; i++) {
+      var obstacleObj = this.obstaclesArray[i];
+      var obstacle = obstacleObj.obstacle;
+      var obstacleRect = obstacleObj.obstacleRect;
+
+      //obstacle.y = obstacle.y - obstacleObj.y;
+      obstacle.x -= obstacleObj.speed;
+      obstacleRect.x -= obstacleObj.speed;
+      if (obstacle.x < -obstacle.width ) {
+        obstacle.x = 800;
+        obstacleRect.x = 800;
+        obstacle.y = getRandomInt(0, 500);
+        obstacleRect.y = obstacle.y;
+      }
+    }    
+
     if ( this.upKey.isDown && this.player.y > 50 ) {
         this.player.physics.velocity.y = this.JUMP_SPEED;
+	this.player.animation.switchTo(2);
     }
 
     this.checkCollisions();
