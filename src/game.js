@@ -50,6 +50,7 @@ state.create = function () {
   this.player.physics.maxVelocity = this.MAX_SPEED;
   this.player.physics.drag.x = this.DRAG;
   this.addChild( this.player );
+  this.playerrect = new Kiwi.Geom.Rectangle( this.player.x, this.player.y, this.player.width, this.player.height );
 
   // Create some ground for the player to walk on
   this.ground = new Kiwi.Group( this );
@@ -177,8 +178,12 @@ state.update = function () {
 }
 
 state.checkCollisions = function () {
-  var playerrect = new Kiwi.Geom.Rectangle( this.player.x, this.player.y, this.player.width, this.player.height );
-  if (Kiwi.Geom.Intersect.rectangleToRectangle(playerrect, this.missilerect).result) {
+  this.playerrect.x = this.player.x;
+  this.playerrect.y = this.player.y;
+  this.playerrect.width = this.player.width;
+  this.playerrect.height = this.player.height;
+
+  if (Kiwi.Geom.Intersect.rectangleToRectangle(this.playerrect, this.missilerect).result) {
     console.log('yay');
     FBInstant.game.setScore(5);
     FBInstant.game.asyncYieldControl();
