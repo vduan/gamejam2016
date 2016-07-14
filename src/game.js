@@ -108,6 +108,8 @@ state.create = function () {
   this.obstaclesArray = new Array();
   for ( var i = 0; i < this.NUMBER_OF_OBSTACLES; i++ ) {
     var obstacle = new Kiwi.GameObjects.Sprite( this, this.textures.obstacle, 500, 400);
+    obstacle.physics = obstacle.components.add(new Kiwi.Components.ArcadePhysics(obstacle, obstacle.box));
+    obstacle.physics.velocity.x = getRandomInt(-90, -50);
     this.obstaclePool.addChild( obstacle);
     var obstacleRect = new Kiwi.Geom.Rectangle( obstacle.x, obstacle.y, obstacle.width, obstacle.height );
     var speed = getRandomInt(6, 9);
@@ -135,6 +137,7 @@ state.reset = function() {
   this.obstaclePool.forEach(this, function(obstacle) {
     obstacle.x = 800;
     obstacle.y = getRandomInt(0, 500);
+    obstacle.physics.velocity.x = getRandomInt(-90, -50);
   });
 
   this.sloth.animation.play('move');
@@ -178,7 +181,6 @@ state.update = function () {
       var obstacleRect = obstacleObj.obstacleRect;
 
       //obstacle.y = obstacle.y - obstacleObj.y;
-      obstacle.x -= obstacleObj.speed;
       obstacleRect.x -= obstacleObj.speed;
       if (obstacle.x < -obstacle.width ) {
         obstacle.x = 800;
@@ -209,6 +211,10 @@ state.checkCollisions = function () {
     this.player.physics.velocity.y = 0;
     this.sloth.physics.velocity.x = 0;
     this.missile.physics.velocity.x = 0;
+
+    this.obstaclePool.forEach(this, function(obstacle) {
+      obstacle.physics.velocity.x = 0;
+    });
 
     this.sloth.animation.stop('move');
     this.player.animation.stop('run');
