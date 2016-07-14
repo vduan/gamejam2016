@@ -10,6 +10,11 @@ state.preload = function () {
   this.addImage( 'grid', './assets/img/background/background_1.png' );
   this.addImage( 'player', './assets/img/logo/rocket.png' );
   this.addImage( 'missile', './assets/img/anime/missile.png');
+
+  this.score = new Kiwi.HUD.Widget.BasicScore( this.game, 50, 50, 0 );
+  this.game.huds.defaultHUD.addWidget( this.score );
+
+  this.score.style.color = 'black';
 };
 
 state.create = function () {
@@ -32,6 +37,14 @@ state.create = function () {
   this.addChild( this.missile );
   this.missilerect = new Kiwi.Geom.Rectangle( this.missile.x, this.missile.y, this.missile.width, this.missile.height );
 
+  this.scoreText = new Kiwi.GameObjects.Textfield(this, 'Score:', 10, 10, '#000');
+  this.addChild( this.scoreText );
+
+  this.collisionState = false;
+  // this.score
+  // this.score = new Kiwi.GameObjects.Textfield(this, '10', 120, 10, '#000');
+  // this.addChild( this.score );
+
 }
 
 
@@ -40,6 +53,7 @@ state.update = function () {
   this.missile.x -= 5;
   this.missilerect.x -= 5;
   if(this.missile.x < -this.missile.width ) {
+   this.collisionState = false;
 	 this.missile.x = 800;
     this.missilerect.x = 800;
     this.missile.y = getRandomInt(0, 500);
@@ -47,7 +61,6 @@ state.update = function () {
   }
 
   this.checkCollisions();
-
 }
 
 state.checkCollisions = function () {
@@ -55,9 +68,16 @@ state.checkCollisions = function () {
     console.log('yay');
     FBInstant.game.setScore(5);
     FBInstant.game.asyncYieldControl();
+    if (!this.collisionState) {
+      this.addScore();
+      this.collisionState = true;
+    }
   }
 }
 
+state.addScore = function () {
+	this.score.counter.current += 10;
+}
 
 var gameOptions = {
   width: 800,
