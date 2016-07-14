@@ -71,6 +71,7 @@ state.create = function () {
   this.sloth.animation.add( 'move', [0, 1], 1, true);
   this.sloth.animation.play('move');
   this.sloth.physics = this.sloth.components.add(new Kiwi.Components.ArcadePhysics(this.sloth, this.sloth.box));
+  this.sloth.physics.velocity.x = -30;
   this.addChild( this.sloth );
 
   this.scoreText = new Kiwi.GameObjects.Textfield(this, 'Score:', 10, 10, '#000');
@@ -127,6 +128,7 @@ state.reset = function() {
   this.sloth.y = getRandomInt(0, 500);
   this.score.counter.current = 0;
   this.player.physics.acceleration.y = this.GRAVITY;
+  this.sloth.physics.velocity.x = -30;
 
   this.sloth.animation.play('move');
   this.player.animation.play('run');
@@ -159,7 +161,6 @@ state.update = function () {
 	     this.player.animation.switchTo(2);
     }
 
-    this.sloth.x -= 3;
     if(this.sloth.x < -this.sloth.width ) {
         this.sloth.x = 800;
         this.sloth.y = getRandomInt(0, 500);
@@ -200,6 +201,7 @@ state.checkCollisions = function () {
     this.running = false;
     this.player.physics.acceleration.y = 0;
     this.player.physics.velocity.y = 0;
+    this.sloth.physics.velocity.x = 0;
 
     this.sloth.animation.stop('move');
     this.player.animation.stop('run');
