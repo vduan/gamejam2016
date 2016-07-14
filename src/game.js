@@ -29,7 +29,7 @@ state.create = function () {
 
   this.SHOT_DELAY = 100; // milliseconds (10 bullets/second)
   this.BULLET_SPEED = 100; // pixels/second
-  this.NUMBER_OF_BULLETS = 20;
+  this.NUMBER_OF_BULLETS = 3;
   this.NUMBER_OF_OBSTACLES = 3;
 
   this.background = new Kiwi.GameObjects.StaticImage( this, this.textures.grid, 0, 0 );
@@ -140,6 +140,10 @@ state.reset = function() {
     obstacle.physics.velocity.x = getRandomInt(-90, -50);
   });
 
+  this.bulletPool.forEach(function(bullet) {
+    bullet.x = -100;
+  });
+
   this.sloth.animation.play('move');
   this.player.animation.play('run');
   FBInstant.loading.complete();
@@ -212,6 +216,10 @@ state.checkCollisions = function () {
 
     this.obstaclePool.forEach(this, function(obstacle) {
       obstacle.physics.velocity.x = 0;
+    });
+
+    this.bulletPool.forEach(function(bullet) {
+      bullet.physics.velocity.x = 0;
     });
 
     this.sloth.animation.stop('move');
